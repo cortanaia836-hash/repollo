@@ -118,11 +118,4 @@ public class LoginForm extends JFrame {
         registro.setVisible(true);
         this.setVisible(false);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LoginForm login = new LoginForm();
-            login.setVisible(true);
-        });
-    }
 }
