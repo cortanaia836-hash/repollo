@@ -101,10 +101,8 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void abrirReportes() {
-        JOptionPane.showMessageDialog(this,
-                "Módulo de reportes en desarrollo",
-                "Información",
-                JOptionPane.INFORMATION_MESSAGE);
+        ReportesForm reportes = new ReportesForm();
+        reportes.setVisible(true);
     }
 
     private void cerrarSesion() {
