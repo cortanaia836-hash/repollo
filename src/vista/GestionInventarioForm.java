@@ -23,6 +23,7 @@ public class GestionInventarioForm extends JFrame {
     private JButton btnAgregarCategoria, btnActualizarCategoria, btnEliminarCategoria, btnLimpiarCategoria;
     private CategoriaDAO categoriaDAO;
     private int idCategoriaSeleccionada = -1;
+    private TableRowSorter<DefaultTableModel> sorterCategorias;
 
     // ========== COMPONENTES PARA PRODUCTOS ==========
     private JTable tablaProductos;
@@ -120,11 +121,16 @@ public class GestionInventarioForm extends JFrame {
 
         JButton btnBuscarCat = new JButton("🔎 Buscar");
         estilizarBoton(btnBuscarCat, new Color(33, 150, 243));
+        btnBuscarCat.addActionListener(e -> buscarCategorias());
         panelBusqueda.add(btnBuscarCat);
 
         JButton btnMostrarTodasCat = new JButton("📋 Mostrar Todas");
         estilizarBoton(btnMostrarTodasCat, new Color(76, 175, 80));
-        btnMostrarTodasCat.addActionListener(e -> cargarCategorias());
+        btnMostrarTodasCat.addActionListener(e -> {
+            txtBuscarCategoria.setText("");
+            sorterCategorias.setRowFilter(null);
+            cargarCategorias();
+        });
         panelBusqueda.add(btnMostrarTodasCat);
 
         // ========== PANEL CENTRAL: TABLA ==========
@@ -139,6 +145,8 @@ public class GestionInventarioForm extends JFrame {
         tablaCategorias = new JTable(modeloCategorias);
         tablaCategorias.setFont(new Font("Arial", Font.PLAIN, 12));
         tablaCategorias.setRowHeight(25);
+        sorterCategorias = new TableRowSorter<>(modeloCategorias);
+        tablaCategorias.setRowSorter(sorterCategorias);
         tablaCategorias.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
         tablaCategorias.getTableHeader().setBackground(new Color(70, 130, 180));
         tablaCategorias.getTableHeader().setForeground(Color.WHITE);
@@ -266,7 +274,12 @@ public class GestionInventarioForm extends JFrame {
 
         btnMostrarTodos = new JButton("📋 Mostrar Todos");
         estilizarBoton(btnMostrarTodos, new Color(76, 175, 80));
-        btnMostrarTodos.addActionListener(e -> cargarProductos());
+        btnMostrarTodos.addActionListener(e -> {
+            txtBuscarProducto.setText("");
+            cmbFiltroCat.setSelectedIndex(0);
+            sorter.setRowFilter(null);
+            cargarProductos();
+        });
         panelBusqueda.add(btnMostrarTodos);
 
         // ========== PANEL CENTRAL: TABLA ==========
@@ -862,6 +875,21 @@ public class GestionInventarioForm extends JFrame {
         btnAjustarStock.setEnabled(false);
         btnEliminarProducto.setEnabled(false);
         tablaProductos.clearSelection();
+    }
+
+    private void buscarCategorias() {
+        String busqueda = txtBuscarCategoria.getText().trim().toLowerCase();
+        if (busqueda.isEmpty()) {
+            mostrarAdvertencia("Ingrese un término de búsqueda");
+            return;
+        }
+
+        RowFilter<DefaultTableModel, Object> rf = RowFilter.regexFilter("(?i)" + busqueda);
+        sorterCategorias.setRowFilter(rf);
+
+        if (tablaCategorias.getRowCount() == 0) {
+            mostrarAdvertencia("No se encontraron categorías que coincidan con: " + busqueda);
+        }
     }
 
     // ========================================
